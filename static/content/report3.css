@@ -1,0 +1,96 @@
+body{
+
+	  background-image:url('images/frame.png');
+	  background-repeat: repeat-y;
+	  background-size: 75% 100%;
+	  background-attachment:local;
+	  background-position: center;
+
+     	}
+     	.container{
+	 	position: relative;
+	 }
+	 a {
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+
+}
+
+a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.previous {
+  background-color: #f1f1f1;
+  color: black;
+  position:left;
+}
+
+.next {
+  background-color: #0366C8;
+  color: white;
+}
+
+.round {
+  border-radius: 50%;
+}
+
+.w3-container
+{
+	margin-left: auto;
+	margin-right:auto;
+}
+
+.tittle
+{
+   font-size:2vw;
+	margin-left: 32%;
+	color: #006699;
+	text-align: center;
+	position: sticky;
+
+}
+
+table 
+{
+	margin:15%;
+	margin-left:20%;
+  width:50%;
+  position: static;
+}
+table, th, td 
+{
+  border:none;
+  border-collapse: collapse;
+}
+    td:hover 
+    {
+
+  color:#00994d;
+}
+
+
+th, td 
+{
+  padding: 15px;
+  text-align: center;
+}
+#t01 tr:nth-child(even) 
+{
+  background-color: #eee;
+}
+#t01 tr:nth-child(odd)
+ {
+ background-color: #fff;
+}
+#t01 th 
+{
+  background-color: #0366C8;
+  color: white;
+}
+#t01 th:hover
+ {
+color:black;
+	}
