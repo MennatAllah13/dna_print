@@ -1,9 +1,20 @@
+import csv
+import io
+import re
+
+import MySQLdb.cursors
+import numpy as np
+import pandas as pd
+import sklearn.metrics as metrics
 from flask import Flask, render_template, request, session
 from flask_mysqldb import MySQL
-import MySQLdb.cursors
-import re
-import io
-import csv
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+from sklearn.utils import shuffle
 
 app = Flask(__name__)
 
@@ -190,15 +201,15 @@ def uploadSample():
             weight = row[16]
 
         cursor.execute('INSERT into samples (client_id, PHV_status, weight, PPARA, NOS3, COL1A1, VDR, ACTN3, BDNF, COL5A1, COL2A1, AMPD1, AGT, GDF5, IGF2, PPARα, ACE, UCP3) VALUES (% s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s)',
-            (clientID, PHV_status, weight, PPARA, NOS3, COL1A1, VDR, ACTN3, BDNF, COL5A1, COL2A1, AMPD1, AGT, GDF5, IGF2, PPAR, ACE, UCP3))
+                       (clientID, PHV_status, weight, PPARA, NOS3, COL1A1, VDR, ACTN3, BDNF, COL5A1, COL2A1, AMPD1, AGT, GDF5, IGF2, PPAR, ACE, UCP3))
 
         #fuzzyLogic(clientID, ACE, ACTN3, PPAR, VDR, COL5A1, AGT, PPARA, UCP3)
 
-        # A = AthleteOrNot()
-        # KI = KneeInjuries()
-        # AI = AnkleInjuries()
+        A = AthleteOrNot()
+        KI = KneeInjuries()
+        AI = AnkleInjuries()
 
-        # return render_template('Report2.html', result=np.array([A, KI, AI]))
+        return render_template('Report2.html', result=np.array([A, KI, AI]))
     else:
         return render_template('UploadSample.html')
 
@@ -239,3 +250,132 @@ def AddDoctor():
         msg = 'Please fill out the form !'
 
     return render_template('AddDoctor.html', msg=msg)
+
+
+def Classification():
+    AthleteOrNot()
+    KneeInjuries()
+    AnkleInjuries()
+
+
+def AthleteOrNot():
+    data = pd.read_csv(
+        r'C:\Users\DELL\source\repos\FlaskWebProject6\FlaskWebProject6\FlaskWebProject6\static\Train1.csv', na_values="?")
+    data = shuffle(data)
+
+    z = data.drop(columns=["Athlete group"])
+    x, y = z, data["Athlete group"]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        x, y, test_size=0.3, random_state=0)
+
+    gnb = GaussianNB()
+    gnb.fit(X_train, y_train)
+    nb = gnb.predict(X_test)
+    print("Naive Bayes accuracy:", metrics.accuracy_score(y_test, nb))
+
+    data2 = pd.read_csv(
+        r'C:\Users\DELL\source\repos\FlaskWebProject6\FlaskWebProject6\FlaskWebProject6\static\Test.csv', na_values="?")
+
+    data2 = data2.drop(columns=["GDF5", "IGF2", "PPAR", "ACE", "UCP3",
+                       "Weight", "Ankle Injuries", "Knee Injuries", "Sample"])
+
+    data2 = encoder(data2)
+
+    status = gnb.predict(data2)
+
+    if status == 1:
+        return "Not Athlete"
+    elif status == 2:
+        return " an Athlete"
+
+
+def KneeInjuries():
+    data = pd.read_csv(
+        r'C:\Users\DELL\source\repos\FlaskWebProject6\FlaskWebProject6\FlaskWebProject6\static\Train2.csv', na_values="?")
+    data = data.fillna(0)
+
+    z = data.drop(columns=["Knee Injuries"])
+    x, y = z, data["Knee Injuries"]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        x, y, test_size=0.3, random_state=0)
+
+    svc = make_pipeline(StandardScaler(), SVC(gamma='auto'))
+    svc.fit(X_train, y_train)
+    sv = svc.predict(X_test)
+
+    print('SVC accuracy:', round(accuracy_score(y_test, sv), 5))
+
+    data2 = pd.read_csv(
+        r'C:\Users\DELL\source\repos\FlaskWebProject6\FlaskWebProject6\FlaskWebProject6\static\Test.csv', na_values="?")
+
+    data2 = data2.drop(columns=["PHV Status", "PPARA", "NOS3", "COL1A1", "VDR",
+                       "ACTN3", "BDNF", "COL2A1", "AGT", "PPAR", "ACE", "UCP3", "Knee Injuries"])
+
+    data2 = encoder(data2)
+
+    status = svc.predict(data2)
+
+    if status == 0:
+        return "You don't have the possibility of having knee injuries"
+    elif status == 1:
+        return "You have the possibility of having knee injuries"
+
+
+def AnkleInjuries():
+    data = pd.read_csv(
+        r'C:\Users\DELL\source\repos\FlaskWebProject6\FlaskWebProject6\FlaskWebProject6\static\Train2.csv', na_values="?")
+    data = data.fillna(0)
+
+    z = data.drop(columns=["Ankle Injuries"])
+    x, y = z, data["Ankle Injuries"]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        x, y, test_size=0.3, random_state=0)
+
+    svc = make_pipeline(StandardScaler(), SVC(gamma='auto'))
+    svc.fit(X_train, y_train)
+    sv = svc.predict(X_test)
+
+    print('SVC accuracy:', round(accuracy_score(y_test, sv), 5))
+
+    data2 = pd.read_csv(
+        r'C:\Users\DELL\source\repos\FlaskWebProject6\FlaskWebProject6\FlaskWebProject6\static\Test.csv', na_values="?")
+
+    data2 = data2.drop(columns=["PHV Status", "PPARA", "NOS3", "COL1A1", "VDR",
+                       "ACTN3", "BDNF", "COL2A1", "AGT", "PPAR", "ACE", "UCP3", "Ankle Injuries"])
+
+    data2 = encoder(data2)
+
+    status = svc.predict(data2)
+
+    if status == 0:
+        return "You don't have the possibility of having ankle injuries"
+    elif status == 1:
+        return "You have the possibility of having ankle injuries"
+
+
+def encoder(data):
+    change = {"PHV Status": {"Pre-PHV": 1, "Mid-PHV": 2, "Post-PHV": 3},
+              "PPARA": {"CC": 1, "GG": 2, "CG": 3},
+              "NOS3": {"CC": 1, "TT": 2, "CT": 3},
+              "COL1A1": {"TT": 1, "CC": 2, "TC": 3},
+              "VDR": {"AA": 1, "GG": 2, "AG": 3},
+              "ACTN3": {"RR": 1, "RX": 2, "XX": 3},
+              "BDNF": {"CC": 1, "CT": 2, "TT": 3},
+              "COL5A1": {"CC": 1, "CT": 2, "TT": 3},
+              "COL2A1": {"CC": 1, "CT": 2, "TT": 3},
+              "AMPD1": {"CC": 1, "CT": 2, "TT": 3},
+              "AGT": {"GG": 1, "GC": 2, "CC": 3},
+              "GDF5": {"TC": 1, "TT": 2, "CC": 3},
+              "IGF2": {"GG": 1, "AG": 2, "AA": 3},
+              "Sample": {"Amatuer": 1, "pro": 2, "semi": 3},
+              "Ankle Injuries": {"Not": 0, "Diseased": 1},
+              "Knee Injuries": {"Not": 0, "Diseased": 1}}
+    data = data.replace(change)
+    return data
+
+
+def effects():
+    pass
