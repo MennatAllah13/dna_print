@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- Site Metas -->
+    <title>Upload Sample</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Site Icons -->
+    <link rel="shortcut icon" href="../static/images/donya15.png" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="../static/images/donya15.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../static/content/bootstrap.min.css">
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="../static/content/style.css">
+    <!-- Colors CSS -->
+    <link rel="stylesheet" href="../static/content/colors.css">
+    <!-- ALL VERSION CSS -->
+    <link rel="stylesheet" href="../static/content/versions.css">
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="../static/content/responsive.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../static/content/custom.css">
+
+    <link rel="stylesheet" href="../static/content/uploadsample.css">
+    <!-- Modernizer for Portfolio -->
+    <script src="../static/scripts/modernizer.js"></script>
+    <!-- [if lt IE 9] -->
+</head>
+<body class="clinic_version">
+    <!-- LOADER -->
+    <div id="preloader" style="background-color: white;">
+        <img class="preloader" src="../static/images/loaders/DNA.gif" alt="">
+    </div>
+    <!-- END LOADER -->
+
+    <header>
+        <div class="header-top wow fadeIn">
+            <div class="container">
+                <a class="navbar-brand" href="index.html"><img src="../static/images/donya14.png" alt="image"></a>
+                <div class="right-header">
+                    <div class="header-info">
+                        <div class="info-inner">
+                            <span class="icontop"><img src="../static/images/phone-icon.png" alt="#"></span>
+                            <span class="iconcont"><a href="tel:800 123 456">01003138425</a></span>
+                        </div>
+                        <div class="info-inner">
+                            <span class="icontop"><i class="fa fa-envelope" aria-hidden="true"></i></span>
+                            <span class="iconcont"><a data-scroll href="mailto:info@yoursite.com">Dnaprints@gmail.com</a></span>
+                        </div>
+                        <div class="info-inner">
+                            <span class="icontop"><i class="fa fa-clock-o" aria-hidden="true"></i></span>
+                            <span class="iconcont"><a data-scroll href="#">24hr/7</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-bottom wow fadeIn">
+            <div class="container">
+                <nav class="main-menu">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <i class="fa fa-bars" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="/doctor">My Profile</a></li>
+                            <li><a class="active" href="/upload">Upload Sample</a></li>
+                            <li><a data-scroll href="/home">Log Out</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="serch-bar">
+                    <div id="custom-search-input">
+                        <div class="input-group col-md-12">
+                            <input type="text" class="form-control input-lg" placeholder="Search" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-info btn-lg" type="button">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <form id="uploader_form" class="scaffold-form" name="uploader_form" action="/UploadSample" method="POST" enctype="multipart/form-data">
+        <div class="button-set">
+            <div class="ajax-upload-dragdrop upload-drag-and-drop-box">
+
+                <div class="finduser">
+                    <label class="user">Enter user ID </label>
+                    <input type="text" class="userID" name="client_id" required>
+                </div>
+
+                <div class="cloudimg">
+                    <img src="../static/images/cloud.png" alt="upload-file" />
+                </div>
+                <div class="files">
+                    <p class="file-type-desc">( <font color="red">*</font>file extension allowed: <strong>.CSV )</strong></p>
+                    <p class="drag-drop-text">
+                        Drag &amp; Drop Files here Or
+                    </p>
+                    <input type="file" name="file" class="fileupload" accept=".csv" style="position: relative;">
+                </div>
+            </div>
+            <div class="file-upload-buttons">
+                <button class="form-back-button" type="button" id="goBackButton" name="btnGoBack">
+                    <span>
+                        <p>
+                            <img src="https://res.cloudinary.com/dtutqsucw/image/upload/v1438960670/back-button-icn.png" class="animated rotateIn">
+                            Go back
+                        </p>
+                    </span>
+                </button>
+                <button class="form-upload-button" type="submit" id="uploadFileButton" name="btnSubmit">
+                    <span id="uploadButtonName">
+                        <p>
+                            Upload
+                            <img src="https://res.cloudinary.com/dtutqsucw/image/upload/v1438960670/file-upload.png" class="animated slideInUp">
+                        </p>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </form>
+    <footer id="footer" class="footer-area wow fadeIn">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="logo padding">
+                        <a href=""><img src="../static/images/donya15.png" alt=""></a>
+                        <p>Locavore pork belly scen ester pine est chill wave microdosing pop uple itarian cliche artisan.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="footer-info padding">
+                        <h3>CONTACT US</h3>
+                        <p><i class="fa fa-map-marker" aria-hidden="true"></i> PO Box 16122 Collins Street West Victoria 8007 Australia</p>
+                        <p><i class="fa fa-paper-plane" aria-hidden="true"></i> info@gmail.com</p>
+                        <p><i class="fa fa-phone" aria-hidden="true"></i> (+1) 800 123 456</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="subcriber-info">
+                        <h3>SUBSCRIBE</h3>
+                        <p>Get healthy news, tip and solutions to your problems from our experts.</p>
+                        <div class="subcriber-box">
+                            <form id="mc-form" class="mc-form">
+                                <div class="newsletter-form">
+                                    <input type="email" autocomplete="off" id="mc-email" placeholder="Email address" class="form-control" name="EMAIL">
+                                    <button class="mc-submit" type="submit"><i class="fa fa-paper-plane"></i></button>
+                                    <div class="clearfix"></div>
+                                    <!-- mailchimp-alerts Start -->
+                                    <div class="mailchimp-alerts">
+                                        <div class="mailchimp-submitting"></div>
+                                        <!-- mailchimp-submitting end -->
+                                        <div class="mailchimp-success"></div>
+                                        <!-- mailchimp-success end -->
+                                        <div class="mailchimp-error"></div>
+                                        <!-- mailchimp-error end -->
+                                    </div>
+                                    <!-- mailchimp-alerts end -->
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <div class="copyright-area wow fadeIn">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="footer-text">
+                        <p>©️ 2018 DNAprints. All Rights Reserved.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="social">
+                        <ul class="social-links">
+                            <li><a href=""><i class="fa fa-rss"></i></a></li>
+                            <li><a href=""><i class="fa fa-facebook"></i></a></li>
+                            <li><a href=""><i class="fa fa-twitter"></i></a></li>
+                            <li><a href=""><i class="fa fa-google-plus"></i></a></li>
+                            <li><a href=""><i class="fa fa-youtube"></i></a></li>
+                            <li><a href=""><i class="fa fa-pinterest"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end copyrights -->
+    <a href="#home" data-scroll class="dmtop global-radius"><i class="fa fa-angle-up"></i></a>
+    <!-- all js files -->
+    <script src="../static/scripts/all.js"></script>
+    <!-- all plugins -->
+    <script src="../static/scripts/custom.js"></script>
+</body>
+</html>

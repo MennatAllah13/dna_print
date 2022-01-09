@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, session
-import re
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
+import re
 import io
 import csv
 
@@ -189,8 +189,8 @@ def uploadSample():
             UCP3 = row[15]
             weight = row[16]
 
-        # cursor.execute('INSERT into samples (client_id, PHV_status, weight, PPARA, NOS3, COL1A1, VDR, ACTN3, BDNF, COL5A1, COL2A1, AMPD1, AGT, GDF5, IGF2, PPARα, ACE, UCP3) VALUES (% s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s)',
-            # (clientID, PHV_status, weight, PPARA, NOS3, COL1A1, VDR, ACTN3, BDNF, COL5A1, COL2A1, AMPD1, AGT, GDF5, IGF2, PPAR, ACE, UCP3))
+        cursor.execute('INSERT into samples (client_id, PHV_status, weight, PPARA, NOS3, COL1A1, VDR, ACTN3, BDNF, COL5A1, COL2A1, AMPD1, AGT, GDF5, IGF2, PPARα, ACE, UCP3) VALUES (% s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s)',
+            (clientID, PHV_status, weight, PPARA, NOS3, COL1A1, VDR, ACTN3, BDNF, COL5A1, COL2A1, AMPD1, AGT, GDF5, IGF2, PPAR, ACE, UCP3))
 
         #fuzzyLogic(clientID, ACE, ACTN3, PPAR, VDR, COL5A1, AGT, PPARA, UCP3)
 

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Final Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/content/report2.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+    <div class="container">
+        <a href="Report.html" class="previous round">&#8249;</a>
+        <a href="Report3.html" class="next round">&#8250;</a>
+    </div>
+    {% if result %}
+    <div class="w3-container">
+        <div class="Athleteornot">
+            <p>You are <strong>{{ result[0] }}</strong></p>
+            <p><strong>{{ result[1] }}</strong></p>
+            <p><strong>{{ result[2] }}</strong></p>
+        </div>
+        <table id="t01">
+            <tr>
+                <th> Recommended Sports</th>
+                <th></th>
+            </tr>
+            <tr>
+                <td>Soccer</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Combat</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Weight lifters</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Power lifters</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Rewers</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Swimming</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>track and field</td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+</body>
+</html>
