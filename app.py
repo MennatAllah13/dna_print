@@ -2,12 +2,15 @@ import csv
 import io
 import re
 
+import matplotlib.pyplot as plt
 import MySQLdb.cursors
 import numpy as np
 import pandas as pd
+import skfuzzy as fuzz
 import sklearn.metrics as metrics
 from flask import Flask, render_template, request, session
 from flask_mysqldb import MySQL
+from skfuzzy import control as ctrl
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
@@ -354,6 +357,540 @@ def AnkleInjuries():
         return "You don't have the possibility of having ankle injuries"
     elif status == 1:
         return "You have the possibility of having ankle injuries"
+
+
+def fuzzyLogic(clientID, ace, actn3, ppar, vdr, col5a1, agt, ppara, ucp3):
+    CS = CombatSports(ace, actn3, pparα)
+    S = Soccer(actn3, vdr, col5a1)
+    WL = Weightlifter(actn3, vdr, ace)
+    BB = Bodybuilding(actn3, agt, ppara)
+    R = Rowers(actn3, ace, ucp3)
+    TF = Trackandfield(ace, actn3, pparα)
+
+    #cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # cursor.execute('INSERT into sports (user_id, CombatSports, Soccer, Weightlifters, Bodybuilding, Rowers, TrackAndField)',
+    # (clientID, CS, S, WL, BB, R, TF))
+
+
+def CombatSports(ace, actn3, pparα):
+    x = [0, 1, 2]
+
+    ACE = ctrl.Antecedent(x, 'ACE')
+    ACTN3 = ctrl.Antecedent(x, 'ACTN3')
+    PPARα = ctrl.Antecedent(x, 'PPARα')
+
+    ACE.automf(3)
+    ACTN3.automf(3)
+    PPARα.automf(3)
+
+    Combat = ctrl.Consequent(np.arange(0, 100, 1), 'Combat')
+
+    Combat['poor'] = fuzz.trimf(Combat.universe, [0, 30, 35])
+    Combat['average'] = fuzz.trimf(Combat.universe, [35, 60, 70])
+    Combat['good'] = fuzz.trimf(Combat.universe, [71, 80, 101])
+
+    rule1 = ctrl.Rule(ACTN3['good'] & ACE['good'] &
+                      PPARα['good'], Combat['good'])
+    rule2 = ctrl.Rule(ACTN3['good'] & ACE['good'] &
+                      PPARα['average'], Combat['good'])
+    rule3 = ctrl.Rule(ACTN3['good'] & ACE['good'] &
+                      PPARα['poor'], Combat['good'])
+    rule4 = ctrl.Rule(ACTN3['good'] & ACE['average']
+                      & PPARα['good'], Combat['good'])
+    rule5 = ctrl.Rule(ACTN3['good'] & ACE['average'] &
+                      PPARα['average'], Combat['average'])
+    rule6 = ctrl.Rule(ACTN3['good'] & ACE['average'] &
+                      PPARα['poor'], Combat['average'])
+    rule7 = ctrl.Rule(ACTN3['good'] & ACE['poor'] &
+                      PPARα['good'], Combat['good'])
+    rule8 = ctrl.Rule(ACTN3['good'] & ACE['poor'] &
+                      PPARα['average'], Combat['average'])
+    rule9 = ctrl.Rule(ACTN3['good'] & ACE['poor'] &
+                      PPARα['poor'], Combat['average'])
+
+    rule10 = ctrl.Rule(ACTN3['average'] & ACE['good']
+                       & PPARα['good'], Combat['good'])
+    rule11 = ctrl.Rule(ACTN3['average'] & ACE['good']
+                       & PPARα['average'], Combat['average'])
+    rule12 = ctrl.Rule(ACTN3['average'] & ACE['good']
+                       & PPARα['poor'], Combat['average'])
+    rule13 = ctrl.Rule(ACTN3['average'] & ACE['average']
+                       & PPARα['good'], Combat['average'])
+    rule14 = ctrl.Rule(ACTN3['average'] & ACE['average']
+                       & PPARα['average'], Combat['average'])
+    rule15 = ctrl.Rule(ACTN3['average'] & ACE['average']
+                       & PPARα['poor'], Combat['average'])
+    rule16 = ctrl.Rule(ACTN3['average'] & ACE['poor']
+                       & PPARα['good'], Combat['average'])
+    rule17 = ctrl.Rule(ACTN3['average'] & ACE['poor']
+                       & PPARα['average'], Combat['average'])
+    rule18 = ctrl.Rule(ACTN3['average'] & ACE['poor']
+                       & PPARα['poor'], Combat['poor'])
+
+    rule19 = ctrl.Rule(ACTN3['poor'] & ACE['good'] &
+                       PPARα['good'], Combat['good'])
+    rule20 = ctrl.Rule(ACTN3['poor'] & ACE['good'] &
+                       PPARα['average'], Combat['average'])
+    rule21 = ctrl.Rule(ACTN3['poor'] & ACE['good'] &
+                       PPARα['poor'], Combat['poor'])
+    rule22 = ctrl.Rule(ACTN3['poor'] & ACE['average']
+                       & PPARα['good'], Combat['average'])
+    rule23 = ctrl.Rule(ACTN3['poor'] & ACE['average']
+                       & PPARα['average'], Combat['average'])
+    rule24 = ctrl.Rule(ACTN3['poor'] & ACE['average']
+                       & PPARα['poor'], Combat['poor'])
+    rule25 = ctrl.Rule(ACTN3['poor'] & ACE['poor'] &
+                       PPARα['good'], Combat['average'])
+    rule26 = ctrl.Rule(ACTN3['poor'] & ACE['poor'] &
+                       PPARα['average'], Combat['poor'])
+    rule27 = ctrl.Rule(ACTN3['poor'] & ACE['poor'] &
+                       PPARα['poor'], Combat['poor'])
+
+    Combat_Ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10, rule11, rule12,
+                                     rule13, rule14, rule15, rule16, rule17, rule18, rule19, rule20, rule21, rule22, rule23, rule24, rule25, rule26, rule27])
+    combat = ctrl.ControlSystemSimulation(Combat_Ctrl)
+
+    combat.input['ACE'] = ace
+    combat.input['ACTN3'] = actn3
+    combat.input['PPARα'] = pparα
+
+    combat.compute()
+
+    print(combat.output['Combat'])
+    return combat.output['Combat']
+
+
+def Soccer(actn3, vdr, col5a1):
+    x = [0, 1, 2]
+
+    ACTN3 = ctrl.Antecedent(x, 'ACTN3')
+    VDR = ctrl.Antecedent(x, 'VDR')
+    COL5A1 = ctrl.Antecedent(x, 'COL5A1')
+
+    ACTN3.automf(3)
+    VDR.automf(3)
+    COL5A1.automf(3)
+
+    Soccer = ctrl.Consequent(np.arange(0, 100, 1), 'Soccer')
+
+    Soccer['poor'] = fuzz.trimf(Soccer.universe, [0, 30, 35])
+    Soccer['average'] = fuzz.trimf(Soccer.universe, [35, 60, 70])
+    Soccer['good'] = fuzz.trimf(Soccer.universe, [71, 80, 101])
+
+    rule1 = ctrl.Rule(ACTN3['good'] & VDR['good'] &
+                      COL5A1['good'], Soccer['good'])
+    rule2 = ctrl.Rule(ACTN3['good'] & VDR['good'] &
+                      COL5A1['average'], Soccer['good'])
+    rule3 = ctrl.Rule(ACTN3['good'] & VDR['good'] &
+                      COL5A1['poor'], Soccer['good'])
+    rule4 = ctrl.Rule(ACTN3['good'] & VDR['average'] &
+                      COL5A1['good'], Soccer['good'])
+    rule5 = ctrl.Rule(ACTN3['good'] & VDR['average'] &
+                      COL5A1['average'], Soccer['average'])
+    rule6 = ctrl.Rule(ACTN3['good'] & VDR['average'] &
+                      COL5A1['poor'], Soccer['average'])
+    rule7 = ctrl.Rule(ACTN3['good'] & VDR['poor'] &
+                      COL5A1['good'], Soccer['good'])
+    rule8 = ctrl.Rule(ACTN3['good'] & VDR['poor'] &
+                      COL5A1['average'], Soccer['average'])
+    rule9 = ctrl.Rule(ACTN3['good'] & VDR['poor'] &
+                      COL5A1['poor'], Soccer['average'])
+
+    rule10 = ctrl.Rule(ACTN3['average'] & VDR['good']
+                       & COL5A1['good'], Soccer['good'])
+    rule11 = ctrl.Rule(ACTN3['average'] & VDR['good']
+                       & COL5A1['average'], Soccer['average'])
+    rule12 = ctrl.Rule(ACTN3['average'] & VDR['good']
+                       & COL5A1['poor'], Soccer['average'])
+    rule13 = ctrl.Rule(ACTN3['average'] & VDR['average']
+                       & COL5A1['good'], Soccer['average'])
+    rule14 = ctrl.Rule(ACTN3['average'] & VDR['average']
+                       & COL5A1['average'], Soccer['average'])
+    rule15 = ctrl.Rule(ACTN3['average'] & VDR['average']
+                       & COL5A1['poor'], Soccer['average'])
+    rule16 = ctrl.Rule(ACTN3['average'] & VDR['poor']
+                       & COL5A1['good'], Soccer['average'])
+    rule17 = ctrl.Rule(ACTN3['average'] & VDR['poor']
+                       & COL5A1['average'], Soccer['average'])
+    rule18 = ctrl.Rule(ACTN3['average'] & VDR['poor']
+                       & COL5A1['poor'], Soccer['poor'])
+
+    rule19 = ctrl.Rule(ACTN3['poor'] & VDR['good'] &
+                       COL5A1['good'], Soccer['good'])
+    rule20 = ctrl.Rule(ACTN3['poor'] & VDR['good'] &
+                       COL5A1['average'], Soccer['average'])
+    rule21 = ctrl.Rule(ACTN3['poor'] & VDR['good'] &
+                       COL5A1['poor'], Soccer['poor'])
+    rule22 = ctrl.Rule(ACTN3['poor'] & VDR['average']
+                       & COL5A1['good'], Soccer['average'])
+    rule23 = ctrl.Rule(ACTN3['poor'] & VDR['average']
+                       & COL5A1['average'], Soccer['average'])
+    rule24 = ctrl.Rule(ACTN3['poor'] & VDR['average']
+                       & COL5A1['poor'], Soccer['poor'])
+    rule25 = ctrl.Rule(ACTN3['poor'] & VDR['poor'] &
+                       COL5A1['good'], Soccer['average'])
+    rule26 = ctrl.Rule(ACTN3['poor'] & VDR['poor'] &
+                       COL5A1['average'], Soccer['poor'])
+    rule27 = ctrl.Rule(ACTN3['poor'] & VDR['poor'] &
+                       COL5A1['poor'], Soccer['poor'])
+
+    Soccer_Ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10, rule11, rule12,
+                                     rule13, rule14, rule15, rule16, rule17, rule18, rule19, rule20, rule21, rule22, rule23, rule24, rule25, rule26, rule27])
+    Soccer = ctrl.ControlSystemSimulation(Soccer_Ctrl)
+
+    Soccer.input['VDR'] = vdr
+    Soccer.input['ACTN3'] = actn3
+    Soccer.input['COL5A1'] = col5a1
+
+    Soccer.compute()
+
+    print(Soccer.output['Soccer'])
+
+
+def Weightlifter(actn3, vdr, ace):
+    x = [0, 1, 2]
+
+    ACTN3 = ctrl.Antecedent(x, 'ACTN3')
+    VDR = ctrl.Antecedent(x, 'VDR')
+    ACE = ctrl.Antecedent(x, 'ACE')
+
+    ACTN3.automf(3)
+    VDR.automf(3)
+    ACE.automf(3)
+
+    Weightlifter = ctrl.Consequent(np.arange(0, 100, 1), 'Weightlifter')
+
+    Weightlifter['poor'] = fuzz.trimf(Weightlifter.universe, [0, 30, 35])
+    Weightlifter['average'] = fuzz.trimf(Weightlifter.universe, [35, 60, 70])
+    Weightlifter['good'] = fuzz.trimf(Weightlifter.universe, [71, 80, 101])
+
+    rule1 = ctrl.Rule(ACTN3['good'] & ACE['good'] &
+                      VDR['good'], Weightlifter['good'])
+    rule2 = ctrl.Rule(ACTN3['good'] & ACE['good'] &
+                      VDR['average'], Weightlifter['good'])
+    rule3 = ctrl.Rule(ACTN3['good'] & ACE['good'] &
+                      VDR['poor'], Weightlifter['good'])
+    rule4 = ctrl.Rule(ACTN3['good'] & ACE['average'] &
+                      VDR['good'], Weightlifter['good'])
+    rule5 = ctrl.Rule(ACTN3['good'] & ACE['average'] &
+                      VDR['average'], Weightlifter['average'])
+    rule6 = ctrl.Rule(ACTN3['good'] & ACE['average'] &
+                      VDR['poor'], Weightlifter['average'])
+    rule7 = ctrl.Rule(ACTN3['good'] & ACE['poor'] &
+                      VDR['good'], Weightlifter['good'])
+    rule8 = ctrl.Rule(ACTN3['good'] & ACE['poor'] &
+                      VDR['average'], Weightlifter['average'])
+    rule9 = ctrl.Rule(ACTN3['good'] & ACE['poor'] &
+                      VDR['poor'], Weightlifter['average'])
+
+    rule10 = ctrl.Rule(ACTN3['average'] & ACE['good']
+                       & VDR['good'], Weightlifter['good'])
+    rule11 = ctrl.Rule(ACTN3['average'] & ACE['good']
+                       & VDR['average'], Weightlifter['average'])
+    rule12 = ctrl.Rule(ACTN3['average'] & ACE['good']
+                       & VDR['poor'], Weightlifter['average'])
+    rule13 = ctrl.Rule(ACTN3['average'] & ACE['average']
+                       & VDR['good'], Weightlifter['average'])
+    rule14 = ctrl.Rule(ACTN3['average'] & ACE['average']
+                       & VDR['average'], Weightlifter['average'])
+    rule15 = ctrl.Rule(ACTN3['average'] & ACE['average']
+                       & VDR['poor'], Weightlifter['average'])
+    rule16 = ctrl.Rule(ACTN3['average'] & ACE['poor']
+                       & VDR['good'], Weightlifter['average'])
+    rule17 = ctrl.Rule(ACTN3['average'] & ACE['poor']
+                       & VDR['average'], Weightlifter['average'])
+    rule18 = ctrl.Rule(ACTN3['average'] & ACE['poor']
+                       & VDR['poor'], Weightlifter['poor'])
+
+    rule19 = ctrl.Rule(ACTN3['poor'] & ACE['good'] &
+                       VDR['good'], Weightlifter['good'])
+    rule20 = ctrl.Rule(ACTN3['poor'] & ACE['good'] &
+                       VDR['average'], Weightlifter['average'])
+    rule21 = ctrl.Rule(ACTN3['poor'] & ACE['good'] &
+                       VDR['poor'], Weightlifter['poor'])
+    rule22 = ctrl.Rule(ACTN3['poor'] & ACE['average']
+                       & VDR['good'], Weightlifter['average'])
+    rule23 = ctrl.Rule(ACTN3['poor'] & ACE['average']
+                       & VDR['average'], Weightlifter['average'])
+    rule24 = ctrl.Rule(ACTN3['poor'] & ACE['average']
+                       & VDR['poor'], Weightlifter['poor'])
+    rule25 = ctrl.Rule(ACTN3['poor'] & ACE['poor'] &
+                       VDR['good'], Weightlifter['average'])
+    rule26 = ctrl.Rule(ACTN3['poor'] & ACE['poor'] &
+                       VDR['average'], Weightlifter['poor'])
+    rule27 = ctrl.Rule(ACTN3['poor'] & ACE['poor'] &
+                       VDR['poor'], Weightlifter['poor'])
+
+    Weightlifter_Ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10, rule11, rule12,
+                                           rule13, rule14, rule15, rule16, rule17, rule18, rule19, rule20, rule21, rule22, rule23, rule24, rule25, rule26, rule27])
+    Weightlifter = ctrl.ControlSystemSimulation(Weightlifter_Ctrl)
+
+    Weightlifter.input['VDR'] = vdr
+    Weightlifter.input['ACTN3'] = actn3
+    Weightlifter.input['ACE'] = ace
+
+    Weightlifter.compute()
+
+    print(Weightlifter.output['Weightlifter'])
+
+
+def Bodybuilding(actn3, agt, ppara):
+    x = [0, 1, 2]
+
+    ACTN3 = ctrl.Antecedent(x, 'ACTN3')
+    PPARA = ctrl.Antecedent(x, 'PPARA')
+    AGT = ctrl.Antecedent(x, 'AGT')
+
+    ACTN3.automf(3)
+    PPARA.automf(3)
+    AGT.automf(3)
+
+    Bodybuilding = ctrl.Consequent(np.arange(0, 100, 1), 'Bodybuilding')
+
+    Bodybuilding['poor'] = fuzz.trimf(Bodybuilding.universe, [0, 30, 35])
+    Bodybuilding['average'] = fuzz.trimf(Bodybuilding.universe, [35, 60, 70])
+    Bodybuilding['good'] = fuzz.trimf(Bodybuilding.universe, [71, 80, 101])
+
+    rule1 = ctrl.Rule(ACTN3['good'] & PPARA['good'] &
+                      AGT['good'], Bodybuilding['good'])
+    rule2 = ctrl.Rule(ACTN3['good'] & PPARA['good'] &
+                      AGT['average'], Bodybuilding['good'])
+    rule3 = ctrl.Rule(ACTN3['good'] & PPARA['good'] &
+                      AGT['poor'], Bodybuilding['good'])
+    rule4 = ctrl.Rule(ACTN3['good'] & PPARA['average']
+                      & AGT['good'], Bodybuilding['good'])
+    rule5 = ctrl.Rule(ACTN3['good'] & PPARA['average']
+                      & AGT['average'], Bodybuilding['average'])
+    rule6 = ctrl.Rule(ACTN3['good'] & PPARA['average']
+                      & AGT['poor'], Bodybuilding['average'])
+    rule7 = ctrl.Rule(ACTN3['good'] & PPARA['poor'] &
+                      AGT['good'], Bodybuilding['good'])
+    rule8 = ctrl.Rule(ACTN3['good'] & PPARA['poor'] &
+                      AGT['average'], Bodybuilding['average'])
+    rule9 = ctrl.Rule(ACTN3['good'] & PPARA['poor'] &
+                      AGT['poor'], Bodybuilding['average'])
+
+    rule10 = ctrl.Rule(ACTN3['average'] & PPARA['good']
+                       & AGT['good'], Bodybuilding['good'])
+    rule11 = ctrl.Rule(ACTN3['average'] & PPARA['good']
+                       & AGT['average'], Bodybuilding['average'])
+    rule12 = ctrl.Rule(ACTN3['average'] & PPARA['good']
+                       & AGT['poor'], Bodybuilding['average'])
+    rule13 = ctrl.Rule(ACTN3['average'] & PPARA['average']
+                       & AGT['good'], Bodybuilding['average'])
+    rule14 = ctrl.Rule(ACTN3['average'] & PPARA['average']
+                       & AGT['average'], Bodybuilding['average'])
+    rule15 = ctrl.Rule(ACTN3['average'] & PPARA['average']
+                       & AGT['poor'], Bodybuilding['average'])
+    rule16 = ctrl.Rule(ACTN3['average'] & PPARA['poor']
+                       & AGT['good'], Bodybuilding['average'])
+    rule17 = ctrl.Rule(ACTN3['average'] & PPARA['poor']
+                       & AGT['average'], Bodybuilding['average'])
+    rule18 = ctrl.Rule(ACTN3['average'] & PPARA['poor']
+                       & AGT['poor'], Bodybuilding['poor'])
+
+    rule19 = ctrl.Rule(ACTN3['poor'] & PPARA['good'] &
+                       AGT['good'], Bodybuilding['good'])
+    rule20 = ctrl.Rule(ACTN3['poor'] & PPARA['good'] &
+                       AGT['average'], Bodybuilding['average'])
+    rule21 = ctrl.Rule(ACTN3['poor'] & PPARA['good'] &
+                       AGT['poor'], Bodybuilding['poor'])
+    rule22 = ctrl.Rule(ACTN3['poor'] & PPARA['average']
+                       & AGT['good'], Bodybuilding['average'])
+    rule23 = ctrl.Rule(ACTN3['poor'] & PPARA['average']
+                       & AGT['average'], Bodybuilding['average'])
+    rule24 = ctrl.Rule(ACTN3['poor'] & PPARA['average']
+                       & AGT['poor'], Bodybuilding['poor'])
+    rule25 = ctrl.Rule(ACTN3['poor'] & PPARA['poor'] &
+                       AGT['good'], Bodybuilding['average'])
+    rule26 = ctrl.Rule(ACTN3['poor'] & PPARA['poor'] &
+                       AGT['average'], Bodybuilding['poor'])
+    rule27 = ctrl.Rule(ACTN3['poor'] & PPARA['poor'] &
+                       AGT['poor'], Bodybuilding['poor'])
+
+    Bodybuilding_Ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10, rule11, rule12,
+                                           rule13, rule14, rule15, rule16, rule17, rule18, rule19, rule20, rule21, rule22, rule23, rule24, rule25, rule26, rule27])
+    Bodybuilding = ctrl.ControlSystemSimulation(Bodybuilding_Ctrl)
+
+    Bodybuilding.input['AGT'] = agt
+    Bodybuilding.input['ACTN3'] = actn3
+    Bodybuilding.input['PPARA'] = ppara
+
+    Bodybuilding.compute()
+
+    print(Bodybuilding.output['Bodybuilding'])
+
+
+def Rowers(ACTN3, ACE, UCP3):
+    x = [0, 1, 2]
+
+    ACTN3 = ctrl.Antecedent(x, 'ACTN3')
+    ACE = ctrl.Antecedent(x, 'ACE')
+    UCP3 = ctrl.Antecedent(x, 'UCP3')
+
+    ACTN3.automf(3)
+    ACE.automf(3)
+    UCP3.automf(3)
+
+    Rowers = ctrl.Consequent(np.arange(0, 100, 1), 'Rowers')
+
+    Rowers['poor'] = fuzz.trimf(Rowers.universe, [0, 30, 35])
+    Rowers['average'] = fuzz.trimf(Rowers.universe, [35, 60, 70])
+    Rowers['good'] = fuzz.trimf(Rowers.universe, [71, 80, 101])
+
+    rule1 = ctrl.Rule(ACTN3['good'] & ACE['good'] &
+                      UCP3['good'], Rowers['good'])
+    rule2 = ctrl.Rule(ACTN3['good'] & ACE['good'] &
+                      UCP3['average'], Rowers['good'])
+    rule3 = ctrl.Rule(ACTN3['good'] & ACE['good'] &
+                      UCP3['poor'], Rowers['good'])
+    rule4 = ctrl.Rule(ACTN3['good'] & ACE['average']
+                      & UCP3['good'], Rowers['good'])
+    rule5 = ctrl.Rule(ACTN3['good'] & ACE['average'] &
+                      UCP3['average'], Rowers['average'])
+    rule6 = ctrl.Rule(ACTN3['good'] & ACE['average'] &
+                      UCP3['poor'], Rowers['average'])
+    rule7 = ctrl.Rule(ACTN3['good'] & ACE['poor'] &
+                      UCP3['good'], Rowers['good'])
+    rule8 = ctrl.Rule(ACTN3['good'] & ACE['poor'] &
+                      UCP3['average'], Rowers['average'])
+    rule9 = ctrl.Rule(ACTN3['good'] & ACE['poor'] &
+                      UCP3['poor'], Rowers['average'])
+
+    rule10 = ctrl.Rule(ACTN3['average'] & ACE['good']
+                       & UCP3['good'], Rowers['good'])
+    rule11 = ctrl.Rule(ACTN3['average'] & ACE['good']
+                       & UCP3['average'], Rowers['average'])
+    rule12 = ctrl.Rule(ACTN3['average'] & ACE['good']
+                       & UCP3['poor'], Rowers['average'])
+    rule13 = ctrl.Rule(ACTN3['average'] & ACE['average']
+                       & UCP3['good'], Rowers['average'])
+    rule14 = ctrl.Rule(ACTN3['average'] & ACE['average']
+                       & UCP3['average'], Rowers['average'])
+    rule15 = ctrl.Rule(ACTN3['average'] & ACE['average']
+                       & UCP3['poor'], Rowers['average'])
+    rule16 = ctrl.Rule(ACTN3['average'] & ACE['poor']
+                       & UCP3['good'], Rowers['average'])
+    rule17 = ctrl.Rule(ACTN3['average'] & ACE['poor']
+                       & UCP3['average'], Rowers['average'])
+    rule18 = ctrl.Rule(ACTN3['average'] & ACE['poor']
+                       & UCP3['poor'], Rowers['poor'])
+
+    rule19 = ctrl.Rule(ACTN3['poor'] & ACE['good'] &
+                       UCP3['good'], Rowers['good'])
+    rule20 = ctrl.Rule(ACTN3['poor'] & ACE['good'] &
+                       UCP3['average'], Rowers['average'])
+    rule21 = ctrl.Rule(ACTN3['poor'] & ACE['good'] &
+                       UCP3['poor'], Rowers['poor'])
+    rule22 = ctrl.Rule(ACTN3['poor'] & ACE['average']
+                       & UCP3['good'], Rowers['average'])
+    rule23 = ctrl.Rule(ACTN3['poor'] & ACE['average']
+                       & UCP3['average'], Rowers['average'])
+    rule24 = ctrl.Rule(ACTN3['poor'] & ACE['average']
+                       & UCP3['poor'], Rowers['poor'])
+    rule25 = ctrl.Rule(ACTN3['poor'] & ACE['poor'] &
+                       UCP3['good'], Rowers['average'])
+    rule26 = ctrl.Rule(ACTN3['poor'] & ACE['poor'] &
+                       UCP3['average'], Rowers['poor'])
+    rule27 = ctrl.Rule(ACTN3['poor'] & ACE['poor'] &
+                       UCP3['poor'], Rowers['poor'])
+
+    Rowers_Ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10, rule11, rule12,
+                                     rule13, rule14, rule15, rule16, rule17, rule18, rule19, rule20, rule21, rule22, rule23, rule24, rule25, rule26, rule27])
+    Rowers = ctrl.ControlSystemSimulation(Rowers_Ctrl)
+
+    Rowers.input['ACE'] = ace
+    Rowers.input['ACTN3'] = actn3
+    Rowers.input['UCP3'] = ucp3
+
+    Rowers.compute()
+
+    print(Rowers.output['Rowers'])
+
+
+def Trackandfield(ACE, ACTN3, PPARα):
+    x = [0, 1, 2]
+    ACE = ctrl.Antecedent(x, 'ACE')
+    ACTN3 = ctrl.Antecedent(x, 'ACTN3')
+    PPARα = ctrl.Antecedent(x, 'PPARα')
+
+    ACE.automf(3)
+    ACTN3.automf(3)
+    PPARα.automf(3)
+
+    Trackandfield = ctrl.Consequent(np.arange(0, 100, 1), 'Trackandfield')
+
+    Trackandfield['poor'] = fuzz.trimf(Trackandfield.universe, [0, 30, 35])
+    Trackandfield['average'] = fuzz.trimf(Trackandfield.universe, [35, 60, 70])
+    Trackandfield['good'] = fuzz.trimf(Trackandfield.universe, [71, 80, 101])
+
+    rule1 = ctrl.Rule(ACTN3['good'] & ACE['good'] &
+                      PPARα['good'], Trackandfield['good'])
+    rule2 = ctrl.Rule(ACTN3['good'] & ACE['good'] &
+                      PPARα['average'], Trackandfield['good'])
+    rule3 = ctrl.Rule(ACTN3['good'] & ACE['good'] &
+                      PPARα['poor'], Trackandfield['good'])
+    rule4 = ctrl.Rule(ACTN3['good'] & ACE['average'] &
+                      PPARα['good'], Trackandfield['good'])
+    rule5 = ctrl.Rule(ACTN3['good'] & ACE['average'] &
+                      PPARα['average'], Trackandfield['average'])
+    rule6 = ctrl.Rule(ACTN3['good'] & ACE['average'] &
+                      PPARα['poor'], Trackandfield['average'])
+    rule7 = ctrl.Rule(ACTN3['good'] & ACE['poor'] &
+                      PPARα['good'], Trackandfield['good'])
+    rule8 = ctrl.Rule(ACTN3['good'] & ACE['poor'] &
+                      PPARα['average'], Trackandfield['average'])
+    rule9 = ctrl.Rule(ACTN3['good'] & ACE['poor'] &
+                      PPARα['poor'], Trackandfield['average'])
+
+    rule10 = ctrl.Rule(ACTN3['average'] & ACE['good']
+                       & PPARα['good'], Trackandfield['good'])
+    rule11 = ctrl.Rule(ACTN3['average'] & ACE['good']
+                       & PPARα['average'], Trackandfield['average'])
+    rule12 = ctrl.Rule(ACTN3['average'] & ACE['good']
+                       & PPARα['poor'], Trackandfield['average'])
+    rule13 = ctrl.Rule(ACTN3['average'] & ACE['average']
+                       & PPARα['good'], Trackandfield['average'])
+    rule14 = ctrl.Rule(ACTN3['average'] & ACE['average']
+                       & PPARα['average'], Trackandfield['average'])
+    rule15 = ctrl.Rule(ACTN3['average'] & ACE['average']
+                       & PPARα['poor'], Trackandfield['average'])
+    rule16 = ctrl.Rule(ACTN3['average'] & ACE['poor']
+                       & PPARα['good'], Trackandfield['average'])
+    rule17 = ctrl.Rule(ACTN3['average'] & ACE['poor']
+                       & PPARα['average'], Trackandfield['average'])
+    rule18 = ctrl.Rule(ACTN3['average'] & ACE['poor']
+                       & PPARα['poor'], Trackandfield['poor'])
+
+    rule19 = ctrl.Rule(ACTN3['poor'] & ACE['good'] &
+                       PPARα['good'], Trackandfield['good'])
+    rule20 = ctrl.Rule(ACTN3['poor'] & ACE['good'] &
+                       PPARα['average'], Trackandfield['average'])
+    rule21 = ctrl.Rule(ACTN3['poor'] & ACE['good'] &
+                       PPARα['poor'], Trackandfield['poor'])
+    rule22 = ctrl.Rule(ACTN3['poor'] & ACE['average']
+                       & PPARα['good'], Trackandfield['average'])
+    rule23 = ctrl.Rule(ACTN3['poor'] & ACE['average']
+                       & PPARα['average'], Trackandfield['average'])
+    rule24 = ctrl.Rule(ACTN3['poor'] & ACE['average']
+                       & PPARα['poor'], Trackandfield['poor'])
+    rule25 = ctrl.Rule(ACTN3['poor'] & ACE['poor'] &
+                       PPARα['good'], Trackandfield['average'])
+    rule26 = ctrl.Rule(ACTN3['poor'] & ACE['poor'] &
+                       PPARα['average'], Trackandfield['poor'])
+    rule27 = ctrl.Rule(ACTN3['poor'] & ACE['poor'] &
+                       PPARα['poor'], Trackandfield['poor'])
+
+    Trackandfield_Ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10, rule11, rule12,
+                                            rule13, rule14, rule15, rule16, rule17, rule18, rule19, rule20, rule21, rule22, rule23, rule24, rule25, rule26, rule27])
+    Trackandfield = ctrl.ControlSystemSimulation(Trackandfield_Ctrl)
+
+    Trackandfield.input['ACE'] = ace
+    Trackandfield.input['ACTN3'] = actn3
+    Trackandfield.input['PPARα'] = pparα
+
+    Trackandfield.compute()
+    print(Trackandfield.output['Trackandfield'])
 
 
 def encoder(data):
